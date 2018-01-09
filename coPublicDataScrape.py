@@ -4,6 +4,7 @@
 #Future Enhancements - Continuous "Machine learning / AI" with logs
 #Specific Enhancements - Authentication capabilities, Change folder from URL to page title,
 #Building a scraper for web services, Build into proper seperation for python / Modularization
+# Need to resolve overwriting zips of same name, some sites have different data types but with same zip name
 
 
 from bs4 import BeautifulSoup
@@ -16,14 +17,14 @@ https = urllib3.PoolManager()
 # Define all the sites to scrape data from
 urls = ['https://www.adcogov.org/gisdata', 'http://emap.mesacounty.us/DownloadData/']
 # Save location
-save_folder = r'C:\Users\Kassr\Desktop\SaveFolder'
+save_folder = r'C:\Users\rezaghok\Desktop\SaveFolder'
 #Creates Logs with static text
-logTxtFail = open(r'C:\Users\Kassr\Desktop\SaveFolder\fail_log.txt', 'w')
+logTxtFail = open(r'C:\Users\rezaghok\Desktop\SaveFolder\fail_log.txt', 'w')
 logTxtFail.write("OIT - GCDP Web Scraper \n" + "Created by Kassrah Rezagholi \n" +
              "This log is of files that were flagged for download but failed due to some issue in the strings, use this file to refine logic. \n" +
              "####################################################################################################################### \n"
              )
-logTxtReject = open(r'C:\Users\Kassr\Desktop\SaveFolder\reject_log.txt', 'w')
+logTxtReject = open(r'C:\Users\rezaghok\Desktop\SaveFolder\reject_log.txt', 'w')
 logTxtReject.write("OIT - GCDP Web Scraper \n" + "Created by Kassrah Rezagholi \n" +
              "This log is of files that were rejected from prospected scraping. Review entries to find missing data and refine logic \n" +
              "####################################################################################################################### \n"
@@ -32,7 +33,7 @@ logTxtReject.write("OIT - GCDP Web Scraper \n" + "Created by Kassrah Rezagholi \
 for url in urls:
     #opens connection to url
     response = https.request('GET', url)
-    #BeautifulSoup returns resonse
+    #BeautifulSoup returns response
     soup = BeautifulSoup(response.data)
     #BeautifulSoup parses for 'a' tag
     links = soup.find_all( 'a', href=True )
@@ -57,16 +58,15 @@ for url in urls:
                r = requests.get(href)
                with open(newSave, 'wb') as fd:
                 for chunk in r.iter_content(chunk_size=128):
-                    fd.write(chunk)
-           except:
+                        fd.write(chunk)
+
+            except:
                 logTxtFail.write("URL: \t" + url + "\t Failed Href: \t" + href + "\n")
                 print href + " Failed."
-           print href
-           #print r
         else:
             #Rejected hrefs
             logTxtReject.write("URL: \t" + url + "\t Rejected Href: \t" + href + "\n")
-            print href + " rejected"
+            print href + " Rejected."
 #Release locks on logs
 logTxtFail.close()
 logTxtReject.close()
