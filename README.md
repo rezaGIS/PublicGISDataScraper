@@ -33,7 +33,7 @@ Set websites to scrape and save folder
 
 urls = ['https://yoursite.com/downloads/']  #Enter URLS here
 # Save location
-save_folder = r'C:\where\am\i\saving\'
+save_folder = r'C:\where\am\i\saving'
 ```
 
 Run the script once those are set properly.
