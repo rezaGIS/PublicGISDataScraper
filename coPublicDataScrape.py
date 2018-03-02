@@ -11,13 +11,17 @@ import urllib3.contrib.pyopenssl
 import requests
 import os
 import time
-
+from urlparse import urljoin
 # VARIABLES
 # Define all the sites to scrape data from
 # Enter in URLs into array to scrape in order
-urls = ['http://yoursite.com/scrape']  #Enter URLS here
+# urls = ['http://gunnisoncounty.org/324/Downloadable-Datasets', 'http://ci.craig.co.us/city_services/public_works/maps',
+#         'http://adm.elpasoco.com/InformationTechnologies/GeographicInformationSystems/Pages/FreeDataCatalog.aspx',
+#         'http://www.adcogov.org/gisdata', 'http://emap.mesacounty.us/DownloadData/']  #Enter URLS here
+urls = [,
+        'http://www.adcogov.org/gisdata', 'http://emap.mesacounty.us/DownloadData/']  #Enter URLS here
 # Save location
-save_folder = r'C:\your\save\location'
+save_folder = r'C:\users\rezaghok\desktop\Scrape'
 
 # Defines pool manager
 https = urllib3.PoolManager()
@@ -49,12 +53,15 @@ for url in urls:
     # BeautifulSoup parses for 'a' tag
     links = soup.find_all('a', href=True)
     # Establish save location for data
+    #parseURL = urlparse(url)
+
     saveFolderFormat = url
     # Formats urls to create a save directory that is logical for finding later
     saveFolderFormat = saveFolderFormat.replace(':', '_')
     saveFolderFormat = saveFolderFormat.replace('//', '')
     saveFolderFormat = saveFolderFormat.replace('/', '_')
     saveFolderFormat = saveFolderFormat.replace('.', '_')
+    saveFolderFormat = saveFolderFormat.replace('?', '')
     # Creates folder for saving files after formatting name
     createFolderPath = os.path.join(save_folder, saveFolderFormat)
     #
@@ -65,10 +72,11 @@ for url in urls:
     for link in links:
         href = link.get('href')
         # If these words are found in the href it will pass and begin download
-        if '.zip' in href or '.shp' in href or '.kml' in href or '.kmz' in href:
+        if '.zip' in href or '.shp' in href or '.kml' in href or '.kmz' in href or '.dwf' in href:
             fileDL = href.rsplit('/', 1)[-1]
             try:
-                r = requests.get(href)
+                test = urljoin(url, href)
+                r = requests.get(test)
                 timeStamp = time.strftime("%Y%m%d_%H%M%S")
                 newSaveTime = os.path.join(createFolderPath, timeStamp + fileDL)
                 with open(newSaveTime, 'wb') as fd:
@@ -76,10 +84,12 @@ for url in urls:
                         fd.write(chunk)
                     print "Downloading: " + href
             except:
+
                 logTxtFail.write("URL: \t" + url + "\t Failed Href: \t" + href + "\n")
                 print href + " Failed."
         else:
             # Rejected hrefs
+
             logTxtReject.write("URL: \t" + url + "\t Rejected Href: \t" + href + "\n")
             print href + " Rejected."
 # Release locks on logs
