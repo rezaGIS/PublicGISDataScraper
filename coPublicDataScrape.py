@@ -14,14 +14,9 @@ import time
 from urlparse import urljoin
 # VARIABLES
 # Define all the sites to scrape data from
-# Enter in URLs into array to scrape in order
-# urls = ['http://gunnisoncounty.org/324/Downloadable-Datasets', 'http://ci.craig.co.us/city_services/public_works/maps',
-#         'http://adm.elpasoco.com/InformationTechnologies/GeographicInformationSystems/Pages/FreeDataCatalog.aspx',
-#         'http://www.adcogov.org/gisdata', 'http://emap.mesacounty.us/DownloadData/']  #Enter URLS here
-urls = [,
-        'http://www.adcogov.org/gisdata', 'http://emap.mesacounty.us/DownloadData/']  #Enter URLS here
+urls = ['https://yoursite.com/downloads/']  #Enter URLS here
 # Save location
-save_folder = r'C:\users\rezaghok\desktop\Scrape'
+save_folder = r'C:\where\am\i\saving'
 
 # Defines pool manager
 https = urllib3.PoolManager()
@@ -54,7 +49,6 @@ for url in urls:
     links = soup.find_all('a', href=True)
     # Establish save location for data
     #parseURL = urlparse(url)
-
     saveFolderFormat = url
     # Formats urls to create a save directory that is logical for finding later
     saveFolderFormat = saveFolderFormat.replace(':', '_')
@@ -64,7 +58,6 @@ for url in urls:
     saveFolderFormat = saveFolderFormat.replace('?', '')
     # Creates folder for saving files after formatting name
     createFolderPath = os.path.join(save_folder, saveFolderFormat)
-    #
     if not os.path.exists(createFolderPath):
         os.makedirs(createFolderPath)
         print "Directory Created: " + createFolderPath
@@ -75,8 +68,8 @@ for url in urls:
         if '.zip' in href or '.shp' in href or '.kml' in href or '.kmz' in href or '.dwf' in href:
             fileDL = href.rsplit('/', 1)[-1]
             try:
-                test = urljoin(url, href)
-                r = requests.get(test)
+                urlJoin = urljoin(url, href)
+                r = requests.get(urlJoin)
                 timeStamp = time.strftime("%Y%m%d_%H%M%S")
                 newSaveTime = os.path.join(createFolderPath, timeStamp + fileDL)
                 with open(newSaveTime, 'wb') as fd:
